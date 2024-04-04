@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import quizCompleteImg from '../assets/quiz-complete.png';
 import QUESTIONS from '../questions.jsx';
+import QuestionTimer from "./QuestionTimer.jsx";
 
 export default function Quiz() {
     // To manage the currently active question displayed to the user
@@ -26,13 +27,27 @@ export default function Quiz() {
     const shuffledAnswers = [...QUESTIONS[activeQuestionIndex].answers];
     shuffledAnswers.sort(() => Math.random() - 0.5);
 
-    function handleSelectAnswer(selectedAnswer) {
+    const handleSelectAnswer = useCallback(function handleSelectAnswer(selectedAnswer) {
         setUserAnswers((currentUserAnswers) => [...currentUserAnswers, selectedAnswer]);
-    }
+    }, []);
+
+    // To make sure that the function is not re-created again
+    // handleSelectAnswer is a state updating func, hence it introduces an indirect depency here
+    const handleSkipAnswer = useCallback(() => handleSelectAnswer(null), [handleSelectAnswer]);
 
     return (
         <div id="quiz">
             <div id="questions">
+                {/* Upon state update, JSX code is only updated. Components are not destroyed and created again.
+                The old instance of components continue to exist, just with updated values. However, for the progress timer to function
+                properly, we want to create the QuestionTimer component whenever a new question is loaded.
+                So, at the time of switching from one question to another, QuestionTimer should be unmounted and re-mounted to the DOM.
+                This will not happen implicitly, thus causing issues in the progress bar (it would never reset upon encountering a new ques).
+                This re-creation of components can be achieved using React's in-built key prop */}
+
+                {/* QuestionTimer component will be instantiated for each question now */}
+                {/* Thus, we will have a new timer and new interval set for each question */}
+                <QuestionTimer key={activeQuestionIndex} timeout={10000} onTimeout={handleSkipAnswer}/>
                 <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
                 <ul id="answers">
                     {shuffledAnswers.map((answer) => <li key={answer} className="answer">
