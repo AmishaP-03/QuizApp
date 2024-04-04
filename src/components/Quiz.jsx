@@ -1,4 +1,5 @@
 import { useState } from "react";
+import quizCompleteImg from '../assets/quiz-complete.png';
 import QUESTIONS from '../questions.jsx';
 
 export default function Quiz() {
@@ -11,6 +12,20 @@ export default function Quiz() {
     // Example of derived state. Done to get rid of redundant state on line 5.
     const activeQuestionIndex = userAnswers.length;
 
+    // Flag to check if all the questions are answered
+    const isQuizComplete = activeQuestionIndex === QUESTIONS.length;
+
+    if (isQuizComplete) {
+        return <div id="summary">
+            <img src={quizCompleteImg} alt="Quiz complete!" />
+            <h2>Quiz complete!</h2>
+        </div>;
+    }
+
+    // To shuffle the answers before displaying on the UI
+    const shuffledAnswers = [...QUESTIONS[activeQuestionIndex].answers];
+    shuffledAnswers.sort(() => Math.random() - 0.5);
+
     function handleSelectAnswer(selectedAnswer) {
         setUserAnswers((currentUserAnswers) => [...currentUserAnswers, selectedAnswer]);
     }
@@ -20,7 +35,7 @@ export default function Quiz() {
             <div id="questions">
                 <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
                 <ul id="answers">
-                    {QUESTIONS[activeQuestionIndex].answers.map((answer) => <li key={answer} className="answer">
+                    {shuffledAnswers.map((answer) => <li key={answer} className="answer">
                         <button onClick={() => handleSelectAnswer(answer)}>{answer}</button>
                     </li>)}
                 </ul>
