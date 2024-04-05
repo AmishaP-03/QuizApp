@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import quizCompleteImg from '../assets/quiz-complete.png';
 import QUESTIONS from '../questions.jsx';
 import QuestionTimer from "./QuestionTimer.jsx";
+import Answers from "./Answers.jsx";
 
 export default function Quiz() {
     // To manage the currently active question displayed to the user
@@ -25,10 +26,6 @@ export default function Quiz() {
             <h2>Quiz complete!</h2>
         </div>;
     }
-
-    // To shuffle the answers before displaying on the UI
-    const shuffledAnswers = [...QUESTIONS[activeQuestionIndex].answers];
-    shuffledAnswers.sort(() => Math.random() - 0.5);
 
     const handleSelectAnswer = useCallback(function handleSelectAnswer(selectedAnswer) {
         setAnsweredState('answered');
@@ -64,25 +61,15 @@ export default function Quiz() {
 
                 {/* QuestionTimer component will be instantiated for each question now */}
                 {/* Thus, we will have a new timer and new interval set for each question */}
-                <QuestionTimer key={activeQuestionIndex} timeout={10000} onTimeout={handleSkipAnswer}/>
+                <QuestionTimer key={activeQuestionIndex+'timer'} timeout={10000} onTimeout={handleSkipAnswer}/>
                 <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
-                <ul id="answers">
-                    {shuffledAnswers.map((answer) => {
-                        let cssClass = '';
-                        const isSelected = answer === userAnswers[userAnswers.length - 1];
-                        if (isSelected && answeredState === 'answered') {
-                            cssClass = 'selected';
-                        }
-
-                        if (isSelected && (answeredState === 'correct' || answeredState === 'wrong')) {
-                            cssClass = answeredState;
-                        }
-                        
-                        return <li key={answer} className="answer">
-                            <button className={cssClass} onClick={() => handleSelectAnswer(answer)}>{answer}</button>
-                        </li>
-                    })}
-                </ul>
+                <Answers
+                    key={activeQuestionIndex+'-answer'} // We want te answers component to be re-created each time App comp executes (i.e upon each question change) so that answers are shuffled properly.
+                    answers = {QUESTIONS[activeQuestionIndex].answers} 
+                    selectedAnswer = {userAnswers[userAnswers.length - 1]}
+                    answeredState = {answeredState}
+                    onSelectAnswer = {handleSelectAnswer} // Answers component will make sure that the argument is passed to the function
+                />
             </div>
         </div>
     );
