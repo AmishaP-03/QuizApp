@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
-import quizCompleteImg from '../assets/quiz-complete.png';
 import QUESTIONS from '../questions.jsx';
 import QuestionTimer from "./QuestionTimer.jsx";
 import Answers from "./Answers.jsx";
+import Summary from "./Summary.jsx";
 
 export default function Quiz() {
     // To manage the currently active question displayed to the user
@@ -10,7 +10,7 @@ export default function Quiz() {
 
     // To store all the answers given by the user until this point
     const [userAnswers, setUserAnswers] = useState([]);
-    const userAnswersLength = userAnswers.filter((answer) => answer !== null).length;
+    const userAnswersLength = userAnswers.length;
 
     const [answeredState, setAnsweredState] = useState('');
 
@@ -37,17 +37,16 @@ export default function Quiz() {
     }, []);
 
     // To make sure that the function is not re-created again
-    // handleSelectAnswer is a state updating func, hence it introduces an indirect depency here
-    const handleSkipAnswer = useCallback(() => handleSelectAnswer(null), [handleSelectAnswer]);
+    const handleSkipAnswer = useCallback(() => {
+        setAnsweredState('');
+        setUserAnswers((currentUserAnswers) => [...currentUserAnswers, '']);
+    }, []);
 
     // Flag to check if all the questions are answered
     const isQuizComplete = activeQuestionIndex === QUESTIONS.length;
 
     if (isQuizComplete) {
-        return <div id="summary">
-            <img src={quizCompleteImg} alt="Quiz complete!" />
-            <h2>Quiz complete!</h2>
-        </div>;
+        return <Summary userAnswers={userAnswers}/>;
     }
 
     return (
