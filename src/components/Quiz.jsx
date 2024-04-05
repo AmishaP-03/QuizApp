@@ -10,8 +10,11 @@ export default function Quiz() {
     // To store all the answers given by the user until this point
     const [userAnswers, setUserAnswers] = useState([]);
 
+    const [answeredState, setAnsweredState] = useState('');
+
     // Example of derived state. Done to get rid of redundant state on line 5.
-    const activeQuestionIndex = userAnswers.length;
+    // Move to the next question only when the answer state is set to ''.
+    const activeQuestionIndex = answeredState === '' ? userAnswers.length : userAnswers.length-1;
 
     // Flag to check if all the questions are answered
     const isQuizComplete = activeQuestionIndex === QUESTIONS.length;
@@ -28,7 +31,21 @@ export default function Quiz() {
     shuffledAnswers.sort(() => Math.random() - 0.5);
 
     const handleSelectAnswer = useCallback(function handleSelectAnswer(selectedAnswer) {
+        setAnsweredState('answered');
         setUserAnswers((currentUserAnswers) => [...currentUserAnswers, selectedAnswer]);
+
+        setTimeout(() => {
+            if(selectedAnswer = QUESTIONS[activeQuestionIndex].answers[0]) {
+                setAnsweredState('correct');
+            } else {
+                setAnsweredState('wrong');
+            }
+
+            // Reset the answer state
+            setTimeout(() => {
+                setAnsweredState('');
+            }, 2000);
+        }, 1000);
     }, []);
 
     // To make sure that the function is not re-created again
@@ -50,9 +67,21 @@ export default function Quiz() {
                 <QuestionTimer key={activeQuestionIndex} timeout={10000} onTimeout={handleSkipAnswer}/>
                 <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
                 <ul id="answers">
-                    {shuffledAnswers.map((answer) => <li key={answer} className="answer">
-                        <button onClick={() => handleSelectAnswer(answer)}>{answer}</button>
-                    </li>)}
+                    {shuffledAnswers.map((answer) => {
+                        let cssClass = '';
+                        const isSelected = answer === userAnswers[userAnswers.length - 1];
+                        if (isSelected && answeredState === 'answered') {
+                            cssClass = 'selected';
+                        }
+
+                        if (isSelected && (answeredState === 'correct' || answeredState === 'wrong')) {
+                            cssClass = answeredState;
+                        }
+                        
+                        return <li key={answer} className="answer">
+                            <button className={cssClass} onClick={() => handleSelectAnswer(answer)}>{answer}</button>
+                        </li>
+                    })}
                 </ul>
             </div>
         </div>
