@@ -10,22 +10,13 @@ export default function Quiz() {
 
     // To store all the answers given by the user until this point
     const [userAnswers, setUserAnswers] = useState([]);
+    const userAnswersLength = userAnswers.filter((answer) => answer !== null).length;
 
     const [answeredState, setAnsweredState] = useState('');
 
     // Example of derived state. Done to get rid of redundant state on line 5.
     // Move to the next question only when the answer state is set to ''.
-    const activeQuestionIndex = answeredState === '' ? userAnswers.length : userAnswers.length-1;
-
-    // Flag to check if all the questions are answered
-    const isQuizComplete = activeQuestionIndex === QUESTIONS.length;
-
-    if (isQuizComplete) {
-        return <div id="summary">
-            <img src={quizCompleteImg} alt="Quiz complete!" />
-            <h2>Quiz complete!</h2>
-        </div>;
-    }
+    const activeQuestionIndex = answeredState === '' ? userAnswersLength : userAnswersLength-1;
 
     const handleSelectAnswer = useCallback(function handleSelectAnswer(selectedAnswer) {
         setAnsweredState('answered');
@@ -48,6 +39,16 @@ export default function Quiz() {
     // To make sure that the function is not re-created again
     // handleSelectAnswer is a state updating func, hence it introduces an indirect depency here
     const handleSkipAnswer = useCallback(() => handleSelectAnswer(null), [handleSelectAnswer]);
+
+    // Flag to check if all the questions are answered
+    const isQuizComplete = activeQuestionIndex === QUESTIONS.length;
+
+    if (isQuizComplete) {
+        return <div id="summary">
+            <img src={quizCompleteImg} alt="Quiz complete!" />
+            <h2>Quiz complete!</h2>
+        </div>;
+    }
 
     return (
         <div id="quiz">
