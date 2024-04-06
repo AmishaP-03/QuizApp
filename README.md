@@ -1,17 +1,30 @@
 # QuizApp
 React based quiz application with a static question bank. 
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 GAME FEATURES:
 
--The quiz logic is based on the assumption that the 0th element of the answers array for each question is the correct answer.
--The answers for each question are shuffled randomly before displaying.
--Players have an option to either select an answer or skip the question by not selecting any option.
--Upon selection:
+1.The quiz logic is based on the assumption that the 0th element of the answers array for each question is the correct answer.
+
+2.The answers for each question are shuffled randomly before displaying.
+
+3.Players have an option to either select an answer or skip the question by not selecting any option.
+
+4.Upon selection:
+
    a) the selected option is highlighted in orange. All the options are now disabled for selection.
+
    b) after a sec, the logic to check if the selected option is correct or incorrect is done executing. Now if correct, the answer gets highlighted in green else in red.
-   c) after another sec, the selection state resets and the next question is loaded with the new answer options enabled for selection
--Each question has a 10 sec timer. If the player does not answer within these 10 seconds, the question is automatically skipped and the next question gets loaded.
--The quiz summary is displayed once all the questions are exhausted.
+
+   c) after another sec, the selection state resets and the next question is loaded with the new answer options enabled for selection.
+   
+   
+5.Each question has a 10 sec timer. If the player does not answer within these 10 seconds, the question is automatically skipped and the next question gets loaded.
+
+6.The quiz summary is displayed once all the questions are exhausted.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 SCREENSHOTS:
 
