@@ -16,14 +16,12 @@ export default function Quiz() {
 
     // Example of derived state. Done to get rid of redundant state on line 5.
     // Move to the next question only when the answer state is set to ''.
-    const activeQuestionIndex = answeredState === '' ? userAnswersLength : userAnswersLength-1;
+    let activeQuestionIndex = answeredState === '' ? userAnswersLength : userAnswersLength-1;
 
-    const handleSelectAnswer = useCallback(function handleSelectAnswer(selectedAnswer) {
-        setAnsweredState('answered');
-        setUserAnswers((currentUserAnswers) => [...currentUserAnswers, selectedAnswer]);
-
+    // Putting out the function so that the following code is executed only when the answeredState, userAnswers and hence activeQuestionIndex is updated.
+    if (answeredState === 'answered') {
         setTimeout(() => {
-            if(selectedAnswer = QUESTIONS[activeQuestionIndex].answers[0]) {
+            if (userAnswers[activeQuestionIndex] === QUESTIONS[activeQuestionIndex].answers[0]) {
                 setAnsweredState('correct');
             } else {
                 setAnsweredState('wrong');
@@ -34,6 +32,11 @@ export default function Quiz() {
                 setAnsweredState('');
             }, 2000);
         }, 1000);
+    }
+
+    const handleSelectAnswer = useCallback(function handleSelectAnswer(selectedAnswer) {
+        setAnsweredState('answered');
+        setUserAnswers((currentUserAnswers) => [...currentUserAnswers, selectedAnswer]);
     }, []);
 
     // To make sure that the function is not re-created again
